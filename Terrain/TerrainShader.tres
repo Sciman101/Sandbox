@@ -1,0 +1,57 @@
+[gd_resource type="Shader" format=2]
+
+[resource]
+code = "shader_type spatial;
+
+uniform sampler2D front : hint_albedo;
+uniform sampler2D side : hint_albedo;
+uniform sampler2D top : hint_albedo;
+uniform sampler2D bottom : hint_albedo;
+
+// Distortion
+uniform vec3 distort_point;
+uniform float distort_amt : hint_range(-1,1);
+
+varying vec3 original_world_vertex;
+
+float rand(vec3 value) {
+	vec3 smallVal = sin(value);
+	float random = dot(smallVal,vec3(12.9898, 78.233, 37.719));
+	random = fract(sin(random)*143758.5453);
+	return random;
+}
+
+void vertex() {
+	
+	vec3 worldVertex = (WORLD_MATRIX * vec4(VERTEX,1.0)).xyz;
+	original_world_vertex = worldVertex;
+	
+	// Get distance to distortion point
+	float dist = max(length(worldVertex - distort_point),0.0001);
+	float intensity = 1.0/(dist*dist*dist*dist);
+	
+	vec3 newVertex = mix(worldVertex,distort_point,intensity*distort_amt);
+	
+	VERTEX = (inverse(WORLD_MATRIX) * vec4(newVertex,1.0)).xyz;
+	//POSITION = vec4(worldVertex,1.0);
+}
+
+void fragment() {
+	//vec3 worldVertex = (CAMERA_MATRIX * vec4(VERTEX,1.0)).xyz;
+	vec3 worldNormal = (CAMERA_MATRIX * vec4(NORMAL,0.0)).xyz;
+	
+	vec2 uv_front = original_world_vertex.xy;
+	vec2 uv_side = original_world_vertex.zy;
+	vec2 uv_top = original_world_vertex.xz;
+	
+	vec3 weights = abs(worldNormal);
+	
+	vec4 col_side = texture(side,uv_side) * weights.x;
+	vec4 col_front = texture(front,uv_front) * weights.z;
+	vec4 col_top = texture(top,uv_top) * max(worldNormal.y,0);
+	vec4 col_bottom = texture(bottom,uv_top) * -min(worldNormal.y,0);
+	
+	vec4 col = col_front + col_side + col_top + col_bottom;
+	
+	ALBEDO = col.rgb;
+}"

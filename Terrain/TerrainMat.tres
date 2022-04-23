@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=2]
+
+[ext_resource path="res://Terrain/Dirt.jpg" type="Texture" id=1]
+[ext_resource path="res://Terrain/Grass.png" type="Texture" id=2]
+[ext_resource path="res://Terrain/TerrainShader.tres" type="Shader" id=3]
+
+[resource]
+shader = ExtResource( 3 )
+shader_param/distort_point = Vector3( 0, 0, 0 )
+shader_param/distort_amt = 0.169
+shader_param/front = ExtResource( 1 )
+shader_param/side = ExtResource( 1 )
+shader_param/top = ExtResource( 2 )
+shader_param/bottom = ExtResource( 1 )

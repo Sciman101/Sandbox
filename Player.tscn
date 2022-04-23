@@ -1,0 +1,208 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://kiki walk.png" type="Texture" id=1]
+[ext_resource path="res://CameraControl.gd" type="Script" id=2]
+[ext_resource path="res://Player.gd" type="Script" id=3]
+[ext_resource path="res://Dust.png" type="Texture" id=4]
+
+[sub_resource type="BoxShape" id=8]
+extents = Vector3( 0.4, 0.75, 0.249949 )
+
+[sub_resource type="Animation" id=7]
+resource_name = "Fall"
+length = 0.5
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite3D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite3D:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector3( 1, 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "Idle"
+length = 2.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite3D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+tracks/1/type = "bezier"
+tracks/1/path = NodePath("Sprite3D:scale:x")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"points": PoolRealArray( 1, -0.25, 0, 0.6, 0.000309825, 1.0106, -0.25, 0, 0.25, 0, 1, -0.45, -0.0001297, 0.25, 0 ),
+"times": PoolRealArray( 0, 1, 2 )
+}
+tracks/2/type = "bezier"
+tracks/2/path = NodePath("Sprite3D:scale:y")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"points": PoolRealArray( 1, -0.25, 0, 0.5, 9.0003e-05, 0.9894, -0.25, 0, 0.25, 0, 1, -0.5, -1.98483e-05, 0.25, 0 ),
+"times": PoolRealArray( 0, 1, 2 )
+}
+tracks/3/type = "bezier"
+tracks/3/path = NodePath("Sprite3D:scale:z")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"points": PoolRealArray(  ),
+"times": PoolRealArray(  )
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "Walk"
+length = 0.6
+loop = true
+step = 0.01
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite3D:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.14, 0.15, 0.3, 0.44, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 1, 1, 1 ), Vector3( 1, 1, 1 ), Vector3( 1.1, 0.9, 1 ), Vector3( 1, 1, 1 ), Vector3( 1, 1, 1 ), Vector3( 1.1, 0.9, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite3D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.15, 0.3, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 2, 1, 2 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Sprite3D:translation")
+tracks/2/interp = 2
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.15, 0.3, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0.0997962, 0 ), Vector3( 0, 0, 0 ), Vector3( 0, 0.0997962, 0 ), Vector3( 0, 0, 0 ) ]
+}
+
+[sub_resource type="SpatialMaterial" id=9]
+flags_transparent = true
+params_billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+albedo_texture = ExtResource( 4 )
+
+[sub_resource type="QuadMesh" id=10]
+
+[sub_resource type="Curve" id=11]
+_data = [ Vector2( 0, 0.245455 ), 0.0, 1.4, 0, 0, Vector2( 1, 0.536364 ), -2.04545, 0.0, 0, 0 ]
+
+[sub_resource type="CubeMesh" id=12]
+size = Vector3( 1.1, 1.1, 1.1 )
+
+[sub_resource type="SpatialMaterial" id=13]
+flags_transparent = true
+albedo_color = Color( 1, 1, 1, 0.392157 )
+
+[node name="Player" type="KinematicBody"]
+collision_layer = 2
+script = ExtResource( 3 )
+move_speed = 5.0
+sprint_speed = 10.0
+dash_speed = 500.0
+acceleration = 60.0
+gravity = 25.0
+jump_speed = 10.0
+
+[node name="CameraOrigin" type="Spatial" parent="."]
+script = ExtResource( 2 )
+
+[node name="Camera" type="Camera" parent="CameraOrigin"]
+transform = Transform( 1, 0, 0, 0, 0.973135, 0.230237, 0, -0.230237, 0.973135, 0, 2.4687, 4.35118 )
+
+[node name="CameraPose1" type="Spatial" parent="CameraOrigin"]
+transform = Transform( 1, 0, 0, 0, 0.973135, 0.230237, 0, -0.230237, 0.973135, 0, 2.4687, 4.35118 )
+
+[node name="CameraPose2" type="Spatial" parent="CameraOrigin"]
+transform = Transform( 1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 5, 8 )
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0 )
+shape = SubResource( 8 )
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform( 1.1, 0, 0, 0, 0.9, 0, 0, 0, 1, 0, 0, 0 )
+offset = Vector2( 0, 82 )
+shaded = true
+alpha_cut = 2
+texture = ExtResource( 1 )
+hframes = 3
+frame = 2
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "Idle"
+anims/Fall = SubResource( 7 )
+anims/Idle = SubResource( 3 )
+anims/Walk = SubResource( 4 )
+
+[node name="SprintParticles" type="CPUParticles" parent="."]
+material_override = SubResource( 9 )
+cast_shadow = 0
+emitting = false
+amount = 4
+lifetime = 0.4
+local_coords = false
+mesh = SubResource( 10 )
+direction = Vector3( 0, 1, 0 )
+spread = 30.0
+gravity = Vector3( 0, -2, 0 )
+initial_velocity = 2.0
+scale_amount = 0.5
+scale_amount_random = 0.2
+scale_amount_curve = SubResource( 11 )
+
+[node name="Cursor" type="MeshInstance" parent="."]
+mesh = SubResource( 12 )
+material/0 = SubResource( 13 )
