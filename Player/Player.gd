@@ -31,6 +31,9 @@ var rotating_player : bool = false
 var target_angle : float = 0
 var mouse_rotation : float
 
+var digging = false
+var targeted_block_pos
+
 var spawnpoint = Vector3.ZERO # DEBUG
 
 func _ready():
@@ -77,7 +80,7 @@ func handle_movement_jumping(delta:float):
 	var sprinting = Input.is_action_pressed("sprint")
 	var transformed_input = transform.basis.xform(raw_input)
 	
-	var moving = raw_input.length_squared() > 0
+	var moving = raw_input.length_squared() > 0 and not digging
 	
 	var spd = move_speed
 	# Change speed if sprinting
@@ -99,14 +102,14 @@ func handle_movement_jumping(delta:float):
 	else:
 		motion.x = move_toward(motion.x,0,acceleration*delta*10)
 		motion.z = move_toward(motion.z,0,acceleration*delta*10)
-		animation.play("Idle")
+		if not digging: animation.play("Idle")
 		moving = false
 	
 	# Rotate to face direction
 	sprite.rotation.y = lerp_angle(sprite.rotation.y,-PI if facing==-1 else 0,delta*15)
 	
 	# Jumping and gravity
-	var wants_to_jump = grounded and Input.is_action_just_pressed("jump")
+	var wants_to_jump = grounded and Input.is_action_just_pressed("jump") and not digging
 	var just_landed = grounded and snap_vector == Vector3.ZERO
 	
 	if grounded:
@@ -159,12 +162,19 @@ func player_dig(blockPos:Vector3):
 	if diff.y == 0 and abs(diff.x) < 2 and abs(diff.y) < 2:
 		# Do we need to turn?
 		var d = transform.basis.xform(diff).dot(Vector3.FORWARD)
+		digging = true
+		targeted_block_pos = blockPos
+		animation.play("Dig")
 		if abs(d) > 0.9:
 			facing = sign(d)
 			rotate_player(2 if d == -1 else 1)
 			yield(self,'finished_rotating')
 		# Remove
-		environment.remove_block(blockPos)
+		yield(animation,'animation_finished')
+		digging = false
+
+func _actually_dig():
+	environment.remove_block(targeted_block_pos)
 
 func player_build(blockPos:Vector3):
 	pass
