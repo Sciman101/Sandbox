@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/kiki walk.png-fe9a9545a89767b298450d536ab41a78.stex"
+path="res://.import/kiki walk.png-1134a754240bb58e312c60472feef023.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://kiki walk.png"
-dest_files=[ "res://.import/kiki walk.png-fe9a9545a89767b298450d536ab41a78.stex" ]
+source_file="res://Player/kiki walk.png"
+dest_files=[ "res://.import/kiki walk.png-1134a754240bb58e312c60472feef023.stex" ]
 
 [params]
 
