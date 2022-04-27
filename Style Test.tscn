@@ -18,6 +18,9 @@ albedo_color = Color( 0.223529, 0.321569, 0.780392, 1 )
 
 [node name="Environment" type="Spatial" parent="."]
 script = ExtResource( 5 )
+__meta__ = {
+"_edit_lock_": true
+}
 terrain_mat = ExtResource( 2 )
 curve = SubResource( 7 )
 
@@ -33,12 +36,14 @@ script = ExtResource( 6 )
 player_path = NodePath("../../Player")
 
 [node name="GridMap" type="GridMap" parent="Environment"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -1 )
 mesh_library = ExtResource( 4 )
 cell_size = Vector3( 1, 1, 1 )
 data = {
 "cells": PoolIntArray(  )
 }
 __meta__ = {
+"_edit_lock_": true,
 "_editor_clip_": 0,
 "_editor_floor_": Vector3( 0, 0, 0 )
 }

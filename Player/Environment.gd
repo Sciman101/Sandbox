@@ -112,6 +112,12 @@ func _process(delta):
 			terrain_mat.set_shader_param("distort_amt",0)
 			bouncing = false
 
+func world_to_block(pos):
+	# THIS ASSUMES GRIDMAP IS AT -1,0,-1
+	pos.x = round(pos.x )
+	pos.y = round(pos.y+0.5)
+	pos.z = round(pos.z)
+	return pos
 
 func get_height(x,y):
 	if x < 0 or x >= MAP_WIDTH or y < 0 or y >= MAP_HEIGHT:
@@ -133,13 +139,13 @@ func remove_block(pos):
 			place_grid_tile(pos.x+1,y,pos.z+1)
 	
 	# Handle jiggle animation
-	terrain_mat.set_shader_param("distort_point",pos+Vector3(1,-0.5,1))
+	terrain_mat.set_shader_param("distort_point",pos+Vector3(0,-0.5,0))
 	bouncing = true
 	bounce = 0
 	
 	# Block breaking particle effects
 	var part = Break_Particles.instance()
-	part.translation = pos+Vector3(1,-0.5,1)
+	part.translation = pos+Vector3(0,-0.5,0)
 	part.emitting = true
 	add_child(part)
 

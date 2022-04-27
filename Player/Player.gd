@@ -2,6 +2,10 @@ extends KinematicBody
 
 const HALF_PI = PI/2
 
+signal finished_rotating(new_rotation)
+
+const Placeholder = preload("res://Placeholder.tscn")
+
 # Movemement properties
 export var move_speed : float
 export var sprint_speed : float
@@ -16,6 +20,8 @@ onready var sprite = $Sprite3D
 onready var sprint_particles = $SprintParticles
 onready var camera = $CameraOrigin/Camera
 
+onready var environment = $"../Environment"
+
 # Movement properties
 var motion : Vector3
 var facing = 1 # Are we facing left or right?
@@ -27,8 +33,6 @@ var mouse_rotation : float
 
 var spawnpoint = Vector3.ZERO # DEBUG
 
-var selected_space : Vector3
-
 func _ready():
 	# temp
 	set_process_input(true)
@@ -36,23 +40,24 @@ func _ready():
 func _input(event):
 	if event is InputEventMouseMotion:
 		mouse_rotation = event.relative.x
-		# Cast ray
-		var from = camera.project_ray_origin(event.position)
-		var to = from + camera.project_ray_normal(event.position) * 100
-		
-		var directState = PhysicsServer.space_get_direct_state(get_world().get_space())
-		var result = directState.intersect_ray(from,to,[],1)
-		if result:
-			# Figure out the grid cell
-			var pos = result.position - result.normal * 0.5
-			pos.x = round(pos.x)
-			pos.y = round(pos.y)
-			pos.z = round(pos.z)
-			selected_space = pos - Vector3(1,0,1)
 	
 	elif event is InputEventMouseButton:
-		if event.pressed and event.button_index == BUTTON_LEFT:
-			get_node("../Environment").remove_block(selected_space)
+		if event.pressed and (event.button_index == BUTTON_LEFT or event.button_index == BUTTON_RIGHT):
+			
+			# Cast ray
+			var from = camera.project_ray_origin(event.position)
+			var to = from + camera.project_ray_normal(event.position) * 100
+			
+			var directState = PhysicsServer.space_get_direct_state(get_world().get_space())
+			var result = directState.intersect_ray(from,to,[],1)
+			if result:
+				# Are we within distance?
+				if not rotating_player and result.position.distance_to(translation) < 2:
+					# Dig or build
+					if event.button_index == BUTTON_LEFT:
+						player_dig(environment.world_to_block(result.position - result.normal * 0.5))
+					else:
+						player_dig(environment.world_to_block(result.position + result.normal * 0.5))
 
 func _physics_process(delta):
 	# Debug respawning
@@ -134,11 +139,35 @@ func handle_spinning(delta:float):
 			if abs(angle_difference(rotation.y,target_angle)) < 0.01:
 				rotation.y = target_angle
 				rotating_player = false
+				emit_signal("finished_rotating",rotation.y)
 	else:
 		if Input.is_action_just_pressed("rotate_camera_right"):
 			rotate_player(1)
 		elif Input.is_action_just_pressed("rotate_camera_left"):
 			rotate_player(-1)
+
+func player_dig(blockPos:Vector3):
+	# Snap our own position to the grid
+	var playerPos = Vector3()
+	playerPos.x = round(translation.x)
+	playerPos.y = round(translation.y+0.5)
+	playerPos.z = round(translation.z)
+	
+	# Figure out the difference to the block
+	var diff = blockPos - playerPos
+	# Are we within range to break?
+	if diff.y == 0 and abs(diff.x) < 2 and abs(diff.y) < 2:
+		# Do we need to turn?
+		var d = transform.basis.xform(diff).dot(Vector3.FORWARD)
+		if abs(d) > 0.9:
+			facing = sign(d)
+			rotate_player(2 if d == -1 else 1)
+			yield(self,'finished_rotating')
+		# Remove
+		environment.remove_block(blockPos)
+
+func player_build(blockPos:Vector3):
+	pass
 
 # Rotate the player a fixed amount
 func rotate_player(increment:int):
