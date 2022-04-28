@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://MarchingCubes.gd" type="Script" id=1]
+[ext_resource path="res://FreeCameraController.gd" type="Script" id=2]
+
+[node name="MarchingCubesMesh" type="MeshInstance"]
+script = ExtResource( 1 )
+grid_size = Vector3( 16, 16, 16 )
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 8 )
+script = ExtResource( 2 )
+move_speed = 10.0
+cam_speed = 0.5
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 0.795008, 0.430746, -0.427107, 0, 0.704102, 0.710099, 0.606599, -0.564535, 0.559766, 0, 3.7357, 5.58698 )
