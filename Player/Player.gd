@@ -4,8 +4,6 @@ const HALF_PI = PI/2
 
 signal finished_rotating(new_rotation)
 
-const Placeholder = preload("res://Placeholder.tscn")
-
 # Movemement properties
 export var move_speed : float
 export var sprint_speed : float
@@ -20,8 +18,6 @@ onready var sprite = $Sprite3D
 onready var sprint_particles = $SprintParticles
 onready var camera = $CameraOrigin/Camera
 
-onready var environment = $"../Environment"
-
 # Movement properties
 var motion : Vector3
 var facing = 1 # Are we facing left or right?
@@ -31,36 +27,11 @@ var rotating_player : bool = false
 var target_angle : float = 0
 var mouse_rotation : float
 
-var digging = false
-var targeted_block_pos
-
 var spawnpoint = Vector3.ZERO # DEBUG
 
 func _ready():
 	# temp
 	set_process_input(true)
-
-func _input(event):
-	if event is InputEventMouseMotion:
-		mouse_rotation = event.relative.x
-	
-	elif event is InputEventMouseButton:
-		if event.pressed and (event.button_index == BUTTON_LEFT or event.button_index == BUTTON_RIGHT):
-			
-			# Cast ray
-			var from = camera.project_ray_origin(event.position)
-			var to = from + camera.project_ray_normal(event.position) * 100
-			
-			var directState = PhysicsServer.space_get_direct_state(get_world().get_space())
-			var result = directState.intersect_ray(from,to,[],1)
-			if result:
-				# Are we within distance?
-				if not rotating_player:
-					# Dig or build
-					if event.button_index == BUTTON_LEFT:
-						player_dig(environment.world_to_block(result.position - result.normal * 0.5))
-					else:
-						player_build(environment.world_to_block(result.position + result.normal * 0.5))
 
 func _physics_process(delta):
 	# Debug respawning
@@ -80,7 +51,7 @@ func handle_movement_jumping(delta:float):
 	var sprinting = Input.is_action_pressed("sprint")
 	var transformed_input = transform.basis.xform(raw_input)
 	
-	var moving = raw_input.length_squared() > 0 and not digging
+	var moving = raw_input.length_squared() > 0
 	
 	var spd = move_speed
 	# Change speed if sprinting
@@ -102,14 +73,14 @@ func handle_movement_jumping(delta:float):
 	else:
 		motion.x = move_toward(motion.x,0,acceleration*delta*10)
 		motion.z = move_toward(motion.z,0,acceleration*delta*10)
-		if not digging: animation.play("Idle")
+		animation.play("Idle")
 		moving = false
 	
 	# Rotate to face direction
 	sprite.rotation.y = lerp_angle(sprite.rotation.y,-PI if facing==-1 else 0,delta*15)
 	
 	# Jumping and gravity
-	var wants_to_jump = grounded and Input.is_action_just_pressed("jump") and not digging
+	var wants_to_jump = grounded and Input.is_action_just_pressed("jump")
 	var just_landed = grounded and snap_vector == Vector3.ZERO
 	
 	if grounded:
@@ -148,18 +119,6 @@ func handle_spinning(delta:float):
 			rotate_player(1)
 		elif Input.is_action_just_pressed("rotate_camera_left"):
 			rotate_player(-1)
-
-func player_dig(blockPos:Vector3):
-	# Snap our own position to the grid
-	var playerPos = Vector3()
-	playerPos.x = round(translation.x)
-	playerPos.y = round(translation.y+0.5)
-	playerPos.z = round(translation.z)
-	
-	environment.remove_block(blockPos)
-
-func player_build(blockPos:Vector3):
-	environment.place_block(blockPos)
 
 # Rotate the player a fixed amount
 func rotate_player(increment:int):
