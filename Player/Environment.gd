@@ -126,17 +126,9 @@ func get_height(x,y):
 		return heightmap[x][y]
 
 func remove_block(pos):
-	var old_height = heightmap[pos.x][pos.z]
 	var new_height = max(pos.y-2,-2)
 	heightmap[pos.x][pos.z] = new_height
-	
-	# Rebuild the heightmap
-	for y in range(new_height,old_height+1):
-		if y > -1:
-			place_grid_tile(pos.x,y,pos.z)
-			place_grid_tile(pos.x,y,pos.z+1)
-			place_grid_tile(pos.x+1,y,pos.z)
-			place_grid_tile(pos.x+1,y,pos.z+1)
+	rebuild_gridmap_at(pos)
 	
 	# Handle jiggle animation
 	terrain_mat.set_shader_param("distort_point",pos+Vector3(0,-0.5,0))
@@ -148,6 +140,23 @@ func remove_block(pos):
 	part.translation = pos+Vector3(0,-0.5,0)
 	part.emitting = true
 	add_child(part)
+
+func place_block(pos):
+	heightmap[pos.x][pos.z] = pos.y-1
+	rebuild_gridmap_at(pos)
+	
+	# Handle jiggle animation
+	terrain_mat.set_shader_param("distort_point",pos+Vector3(0,-0.5,0))
+	bouncing = true
+	bounce = 0
+
+func rebuild_gridmap_at(pos):
+	# Rebuild the gridmap
+	for y in range(-1,max_height):
+		place_grid_tile(pos.x,y,pos.z)
+		place_grid_tile(pos.x,y,pos.z+1)
+		place_grid_tile(pos.x+1,y,pos.z)
+		place_grid_tile(pos.x+1,y,pos.z+1)
 
 func build_heightmap():
 	gridmap.clear()

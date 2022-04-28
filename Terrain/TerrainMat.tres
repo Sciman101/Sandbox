@@ -8,6 +8,7 @@
 shader = ExtResource( 3 )
 shader_param/distort_point = Vector3( 0, 0, 0 )
 shader_param/distort_amt = 0.169
+shader_param/fade_dist = 2.0
 shader_param/front = ExtResource( 1 )
 shader_param/side = ExtResource( 1 )
 shader_param/top = ExtResource( 2 )

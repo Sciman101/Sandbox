@@ -55,12 +55,12 @@ func _input(event):
 			var result = directState.intersect_ray(from,to,[],1)
 			if result:
 				# Are we within distance?
-				if not rotating_player and result.position.distance_to(translation) < 2:
+				if not rotating_player:
 					# Dig or build
 					if event.button_index == BUTTON_LEFT:
 						player_dig(environment.world_to_block(result.position - result.normal * 0.5))
 					else:
-						player_dig(environment.world_to_block(result.position + result.normal * 0.5))
+						player_build(environment.world_to_block(result.position + result.normal * 0.5))
 
 func _physics_process(delta):
 	# Debug respawning
@@ -156,28 +156,10 @@ func player_dig(blockPos:Vector3):
 	playerPos.y = round(translation.y+0.5)
 	playerPos.z = round(translation.z)
 	
-	# Figure out the difference to the block
-	var diff = blockPos - playerPos
-	# Are we within range to break?
-	if diff.y == 0 and abs(diff.x) < 2 and abs(diff.y) < 2:
-		# Do we need to turn?
-		var d = transform.basis.xform(diff).dot(Vector3.FORWARD)
-		digging = true
-		targeted_block_pos = blockPos
-		animation.play("Dig")
-		if abs(d) > 0.9:
-			facing = sign(d)
-			rotate_player(2 if d == -1 else 1)
-			yield(self,'finished_rotating')
-		# Remove
-		yield(animation,'animation_finished')
-		digging = false
-
-func _actually_dig():
-	environment.remove_block(targeted_block_pos)
+	environment.remove_block(blockPos)
 
 func player_build(blockPos:Vector3):
-	pass
+	environment.place_block(blockPos)
 
 # Rotate the player a fixed amount
 func rotate_player(increment:int):

@@ -3,6 +3,13 @@
 [resource]
 code = "shader_type spatial;
 
+const int thresholdArray[16] = int[16](
+	1,9,3,11,
+	13,5,15,7,
+	4,12,2,10,
+	16,8,15,16
+);
+
 uniform sampler2D front : hint_albedo;
 uniform sampler2D side : hint_albedo;
 uniform sampler2D top : hint_albedo;
@@ -11,6 +18,9 @@ uniform sampler2D bottom : hint_albedo;
 // Distortion
 uniform vec3 distort_point;
 uniform float distort_amt : hint_range(-1,1);
+
+// Fade
+uniform float fade_dist;
 
 varying vec3 original_world_vertex;
 
@@ -37,6 +47,8 @@ void vertex() {
 }
 
 void fragment() {
+	float depth = texture(DEPTH_TEXTURE,SCREEN_UV).r;
+	
 	//vec3 worldVertex = (CAMERA_MATRIX * vec4(VERTEX,1.0)).xyz;
 	vec3 worldNormal = (CAMERA_MATRIX * vec4(NORMAL,0.0)).xyz;
 	
@@ -54,4 +66,21 @@ void fragment() {
 	vec4 col = col_front + col_side + col_top + col_bottom;
 	
 	ALBEDO = col.rgb;
+	
+	// Calculate threshold
+	vec2 pix = SCREEN_UV * VIEWPORT_SIZE;
+	int index = int(mod(pix.x,4)) + int(mod(pix.y,4)) * 4;
+	float threshold = float(thresholdArray[index])/17.0;
+	
+	// Get distance to camera
+	vec3 ndc = vec3(SCREEN_UV,depth)*2.0-1.0;
+	vec4 view = INV_PROJECTION_MATRIX * vec4(ndc,1.0);
+	view.xyz /= view.w;
+	float linear_depth = -view.z;
+	
+	// Discard
+	float a = clamp(linear_depth / fade_dist,0,1);
+	if (a-threshold<0.0) {
+		discard;
+	}
 }"
