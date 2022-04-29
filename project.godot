@@ -14,6 +14,10 @@ config/name="Sandbox"
 run/main_scene="res://MarchingCubesMesh.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+McTables="*res://MCTables.gd"
+
 [input]
 
 up={

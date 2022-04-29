@@ -1,7 +1,9 @@
-extends Camera
+extends Spatial
 
 export var move_speed : float
-export var cam_speed : float
+export var cam_speed : Vector2
+
+onready var camera = $Camera
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -9,7 +11,9 @@ func _ready():
 
 func _input(event):
 	if event is InputEventMouseMotion:
-		rotate_y(get_process_delta_time()*event.relative.x*-cam_speed)
+		rotate_y(get_process_delta_time()*event.relative.x*-cam_speed.x)
+		camera.rotate_x(get_process_delta_time()*event.relative.y*-cam_speed.y)
+		camera.rotation_degrees.x = clamp(camera.rotation_degrees.x,-90,90)
 
 
 func _process(delta):

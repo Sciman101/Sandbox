@@ -47,7 +47,7 @@ void vertex() {
 }
 
 void fragment() {
-	float depth = texture(DEPTH_TEXTURE,SCREEN_UV).r;
+	//float depth = texture(DEPTH_TEXTURE,SCREEN_UV).r;
 	
 	//vec3 worldVertex = (CAMERA_MATRIX * vec4(VERTEX,1.0)).xyz;
 	vec3 worldNormal = (CAMERA_MATRIX * vec4(NORMAL,0.0)).xyz;
@@ -68,7 +68,7 @@ void fragment() {
 	ALBEDO = col.rgb;
 	
 	// Calculate threshold
-	vec2 pix = SCREEN_UV * VIEWPORT_SIZE;
+	/*vec2 pix = SCREEN_UV * VIEWPORT_SIZE;
 	int index = int(mod(pix.x,4)) + int(mod(pix.y,4)) * 4;
 	float threshold = float(thresholdArray[index])/17.0;
 	
@@ -82,5 +82,5 @@ void fragment() {
 	float a = clamp(linear_depth / fade_dist,0,1);
 	if (a-threshold<0.0) {
 		discard;
-	}
+	}*/
 }"
