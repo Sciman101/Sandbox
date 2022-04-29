@@ -1,15 +1,13 @@
 extends MeshInstance
-tool
 
 export var grid_size : Vector3 # Number of POINTS, not the blocks
 export var cell_size : float = 1
 export var surface_level : float
 
 var grid = null
+var grid_slice_size : int
 
 func _ready():
-	
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
 	# We use a 1-d array for performance
 	grid = []
@@ -22,15 +20,17 @@ func _ready():
 			for z in range(grid_size.z):
 				grid.append((noise.get_noise_3d(x*scale,y*scale,z*scale)+1)*0.5)
 	
+	grid_slice_size = grid_size.x * grid_size.z
+	
 	generate()
 
 # Grid helper methods
 func grid_get(x:int,y:int,z:int) -> float:
-	return grid[x+z*grid_size.x+y*(grid_size.x*grid_size.z)]
+	return grid[x+z*grid_size.x+y*grid_slice_size]
 func grid_set(v:float,x:int,y:int,z:int) -> void:
-	grid[x+z*grid_size.x+y*(grid_size.x*grid_size.z)] = v
+	grid[x+z*grid_size.x+y*grid_slice_size] = v
 func coord2index(x:int,y:int,z:int) -> int:
-	return int(x+z*grid_size.x+y*(grid_size.x*grid_size.z))
+	return int(x+z*grid_size.x+y*grid_slice_size)
 
 
 # Actually generate a mesh from our grid
@@ -47,6 +47,7 @@ func generate():
 	st.generate_normals()
 	var array_mesh = st.commit()
 	mesh = array_mesh
+	yield(get_tree(),'idle_frame')
 
 
 func build_cell(x:int,y:int,z:int,st:SurfaceTool):
@@ -71,7 +72,7 @@ func build_cell(x:int,y:int,z:int,st:SurfaceTool):
 	
 	if McTables.Edges[index] == 0:
 		# This cube is either totally inside or outside the surface, ignore it
-		return
+		return false
 	
 	var cube_vertices = [
 		Vector3(x,y,z+1)*cell_size,
@@ -99,3 +100,5 @@ func build_cell(x:int,y:int,z:int,st:SurfaceTool):
 		var vertex = p1+(((surface_level-v1)*(p2-p1))/(v2-v1))
 		
 		st.add_vertex(vertex)
+	
+	return true

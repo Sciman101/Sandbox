@@ -27,7 +27,7 @@ surface_level = 0.5
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 8 )
 script = ExtResource( 2 )
 move_speed = 10.0
-cam_speed = Vector2( 3, 2 )
+cam_speed = Vector2( 0.5, 0.5 )
 
 [node name="Camera" type="Camera" parent="Player"]
 
